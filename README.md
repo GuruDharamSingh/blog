@@ -42,9 +42,19 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 - Requires Netlify Identity + Git Gateway enabled
 - Media uploads go to `public/uploads`
 
-### Netlify Setup
-1. Push this repo to GitHub.
-2. Create a new site in Netlify from the repo.
-3. Settings → Identity → Enable Identity.
-4. Identity → Settings → Services → Enable Git Gateway.
-5. Invite your email. After accepting, login at `/admin`.
+### Deploy to Netlify
+1. Push this repo to GitHub (done).
+2. In Netlify, New site from Git → pick this repo.
+3. Build settings: Build command `npm run build` (default), leave Publish dir blank (Next.js plugin manages it).
+4. After first deploy, go to Site settings → Identity → Enable Identity (Registration: Invite only).
+5. Identity → Services → Enable Git Gateway.
+6. Identity → Invite users → invite `gurudharamsingh@gmail.com`.
+7. Visit `/admin` on your site, accept the invite, and log in.
+
+Env variables (only if you use these features):
+- OPENAI_API_KEY: required for the AI enrich API at `/api/ai-enrich`.
+- NEXT_PUBLIC_FIREBASE_*: only needed if using Firebase auth/analytics or the upload endpoint.
+
+Notes:
+- Decap CMS writes to `content/posts` and saves media in `public/uploads`.
+- The Netlify Next.js plugin is enabled via `netlify.toml`.

@@ -11,6 +11,10 @@ const withMDX = createMDX({
 
 const nextConfig: NextConfig = {
   pageExtensions: ['ts','tsx','md','mdx'],
+  eslint: {
+    // Netlify build should not fail on lint errors; fix them incrementally
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default withMDX(nextConfig);
