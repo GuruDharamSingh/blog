@@ -1,4 +1,6 @@
 # Netlify configuration for Next.js App Router
+site_id = "d61cfc89-3a4c-4143-b349-f318fb313c6d"
+
 [build]
   command = "npm run build"
 
