@@ -1,17 +1,11 @@
 import Link from "next/link";
-import { listPublishedPosts } from "@/lib/firestoreClient";
 import { getAllPostsMeta } from "@/lib/posts";
 
-export const dynamic = 'force-dynamic';
+// Static rendering from filesystem posts
+export const dynamic = 'force-static';
 
 export default async function Home() {
-  let posts: any[] = [];
-  try {
-    posts = await listPublishedPosts();
-  } catch {}
-  if (!posts || posts.length === 0) {
-    posts = getAllPostsMeta();
-  }
+  const posts = getAllPostsMeta();
   return (
     <main className="mx-auto max-w-2xl py-12 px-4">
       <h1 className="text-4xl font-bold mb-8">Blog</h1>

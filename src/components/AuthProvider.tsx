@@ -1,9 +1,13 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from 'react';
-import { app } from '@/lib/firebase/client';
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { getFirebaseApp } from '@/lib/firebase/client';
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, type Auth } from 'firebase/auth';
 
-const auth = getAuth(app);
+const getAuthSafe = (): Auth | null => {
+  const app = getFirebaseApp();
+  if (!app) return null;
+  try { return getAuth(app); } catch { return null; }
+};
 
 export type UserInfo = { uid: string; email?: string | null; displayName?: string | null; photoURL?: string | null } | null;
 
@@ -24,26 +28,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const adminEmail = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || '').toLowerCase();
 
+  const auth = useMemo(() => getAuthSafe(), []);
+
   useEffect(() => {
+    if (!auth) { setLoading(false); return; }
     return onAuthStateChanged(auth, u => {
       setUser(u ? { uid: u.uid, email: u.email, displayName: u.displayName, photoURL: u.photoURL } : null);
       setLoading(false);
     });
-  }, []);
+  }, [auth]);
 
   const isAdmin = !!(user?.email && adminEmail && user.email.toLowerCase() === adminEmail);
 
   async function signInGoogle() {
+    if (!auth) return;
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
   }
   async function signInEmail(email: string, password: string) {
+    if (!auth) return;
     await signInWithEmailAndPassword(auth, email, password);
   }
   async function registerEmail(email: string, password: string) {
+    if (!auth) return;
     await createUserWithEmailAndPassword(auth, email, password);
   }
-  async function logout() { await signOut(auth); }
+  async function logout() { if (!auth) return; await signOut(auth); }
 
   return <Ctx.Provider value={{ user, loading, isAdmin, signInGoogle, signInEmail, registerEmail, logout }}>{children}</Ctx.Provider>;
 }

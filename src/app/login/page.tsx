@@ -1,7 +1,9 @@
-"use client";
 import { useState } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { useRouter } from 'next/navigation';
+
+// Force dynamic rendering to avoid Firebase auth init during build
+export const dynamic = 'force-dynamic';
 
 export default function LoginPage() {
   const { signInGoogle, signInEmail, registerEmail, user, loading } = useAuth();
