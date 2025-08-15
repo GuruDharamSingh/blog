@@ -3,8 +3,33 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Decap CMS</title>
+    <title>Blog Admin - AI-Powered CMS</title>
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <style>
+      /* Custom styling for AI features */
+      .ai-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        margin: 4px;
+        transition: all 0.3s ease;
+      }
+      .ai-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      }
+      .ai-panel {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border: 1px solid #e0e6ef;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 16px 0;
+      }
+    </style>
   </head>
   <body>
     <!-- Decap CMS mounts itself here -->
@@ -20,5 +45,103 @@
       }
     </script>
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    
+    <!-- AI Enhancement Script -->
+    <script>
+      // AI Enhancement Functions
+      async function enrichWithAI() {
+        const title = document.querySelector('[data-testid="title-field-input"]')?.value || '';
+        const body = document.querySelector('.CodeMirror')?.CodeMirror?.getValue() || '';
+        
+        if (!title || !body) {
+          alert('Please add a title and some content first!');
+          return;
+        }
+
+        try {
+          const response = await fetch('/api/ai-enrich', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, content: body })
+          });
+          
+          const data = await response.json();
+          
+          if (data.error) {
+            alert('AI Error: ' + data.error);
+            return;
+          }
+
+          // Fill in the generated data
+          if (data.summary) {
+            const summaryField = document.querySelector('[data-testid="summary-field-input"]');
+            if (summaryField) summaryField.value = data.summary;
+          }
+          
+          if (data.category) {
+            const categoryField = document.querySelector('[data-testid="category-field-input"]');
+            if (categoryField) categoryField.value = data.category;
+          }
+          
+          if (data.meta_description) {
+            const metaField = document.querySelector('[data-testid="meta_description-field-input"]');
+            if (metaField) metaField.value = data.meta_description;
+          }
+          
+          alert('✨ AI enrichment complete! Check the Summary, Category, and Meta Description fields.');
+          
+        } catch (error) {
+          alert('Failed to enrich with AI: ' + error.message);
+        }
+      }
+
+      // Add AI button when CMS loads
+      function addAIButton() {
+        setTimeout(() => {
+          const toolbar = document.querySelector('.css-1t67c8i') || document.querySelector('.css-1lx9q1k');
+          if (toolbar && !document.querySelector('.ai-enhance-btn')) {
+            const aiButton = document.createElement('button');
+            aiButton.className = 'ai-button ai-enhance-btn';
+            aiButton.innerHTML = '🤖 AI Enrich';
+            aiButton.onclick = enrichWithAI;
+            toolbar.appendChild(aiButton);
+          }
+        }, 2000);
+      }
+
+      // Watch for CMS initialization
+      document.addEventListener('DOMContentLoaded', () => {
+        addAIButton();
+        // Keep trying to add button as CMS loads
+        setInterval(addAIButton, 3000);
+      });
+
+      // Register custom preview for better post preview
+      CMS.registerPreviewTemplate('posts', ({ entry, widgetFor, widgetsFor }) => {
+        const title = entry.getIn(['data', 'title']);
+        const body = widgetFor('body');
+        const summary = entry.getIn(['data', 'summary']);
+        const category = entry.getIn(['data', 'category']);
+        const tags = entry.getIn(['data', 'tags']);
+        
+        return `
+          <div style="max-width: 800px; margin: 0 auto; padding: 20px; font-family: system-ui;">
+            <div style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+              <div style="color: #6366f1; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">${category || 'Personal'}</div>
+              <h1 style="margin: 0 0 12px 0; color: #1f2937;">${title || 'Your Post Title'}</h1>
+              ${summary ? `<p style="color: #6b7280; margin: 0; font-style: italic;">${summary}</p>` : ''}
+              ${tags ? `
+                <div style="margin-top: 12px;">
+                  ${tags.map(tag => `<span style="background: #e5e7eb; color: #374151; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-right: 8px;">${tag}</span>`).join('')}
+                </div>
+              ` : ''}
+            </div>
+            <article style="line-height: 1.6; color: #374151;">
+              ${body}
+            </article>
+          </div>
+        `;
+      });
+    </script>
   </body>
 </html>

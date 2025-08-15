@@ -11,6 +11,10 @@ export type PostMeta = {
   summary?: string;
   tags?: string[];
   published?: boolean;
+  category?: string;
+  featured?: boolean;
+  featured_image?: string;
+  meta_description?: string;
 };
 
 export function ensureContentDirs() {
@@ -30,11 +34,29 @@ export function getAllPostsMeta(): PostMeta[] {
         date: data.date || new Date().toISOString(),
         summary: data.summary || '',
         tags: data.tags || [],
-        published: data.published !== false
+        published: data.published !== false,
+        category: data.category || 'Personal',
+        featured: data.featured || false,
+        featured_image: data.featured_image || '',
+        meta_description: data.meta_description || ''
       } as PostMeta;
     })
     .filter(p => p.published)
     .sort((a,b)=> new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
+export function getPostsByCategory(category: string): PostMeta[] {
+  return getAllPostsMeta().filter(p => p.category === category);
+}
+
+export function getFeaturedPosts(): PostMeta[] {
+  return getAllPostsMeta().filter(p => p.featured);
+}
+
+export function getAllCategories(): string[] {
+  const posts = getAllPostsMeta();
+  const categories = [...new Set(posts.map(p => p.category).filter(Boolean))] as string[];
+  return categories.sort();
 }
 
 export function getPostBySlug(slug: string) {
