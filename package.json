@@ -10,8 +10,6 @@
   },
   "dependencies": {
     "@next/mdx": "^15.4.6",
-    "firebase": "^12.1.0",
-    "firebase-admin": "^13.4.0",
     "gray-matter": "^4.0.3",
     "next": "15.4.6",
     "next-mdx-remote": "^5.0.0",

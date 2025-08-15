@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { dbAdmin } from '@/lib/firebase/admin';
 
-// POST { title, content, slug? } -> { summary, tags }
+// POST { title, content } -> { summary, tags, category, meta_description }
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { title = '', content = '', slug } = body;
+    const { title = '', content = '' } = body;
+
+    if (!title || !content) {
+      return NextResponse.json({ error: 'Title and content are required' }, { status: 400 });
+    }
 
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) throw new Error('Missing OPENAI_API_KEY');
@@ -30,7 +33,7 @@ ${content.slice(0,5000)}
     const completion = await client.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
-        { role: 'system', content: 'Extract concise metadata only.' },
+        { role: 'system', content: 'Extract concise metadata only. Return valid JSON.' },
         { role: 'user', content: prompt }
       ],
       temperature: 0.3,
@@ -52,29 +55,21 @@ ${content.slice(0,5000)}
         category = parsed.category || 'Personal';
         meta_description = parsed.meta_description || summary.slice(0, 160);
       } else {
-        summary = raw.slice(0,240);
+        // Fallback if no JSON found
+        summary = `${title}: ${content.slice(0, 200)}...`.slice(0, 240);
         meta_description = summary.slice(0, 160);
+        tags = [];
       }
     } catch {
-      summary = raw.slice(0,240);
+      // Fallback on parse error
+      summary = `${title}: ${content.slice(0, 200)}...`.slice(0, 240);
       meta_description = summary.slice(0, 160);
-    }
-
-    if (slug && dbAdmin) {
-      const docRef = dbAdmin.collection('posts').doc(slug);
-      await docRef.set({ 
-        title, 
-        summary, 
-        tags, 
-        category,
-        meta_description,
-        updatedAt: new Date(), 
-        draft: true 
-      }, { merge: true });
+      tags = [];
     }
 
     return NextResponse.json({ summary, tags, category, meta_description });
   } catch (e:any) {
-    return NextResponse.json({ error: e.message }, { status: 400 });
+    console.error('AI enrich error:', e);
+    return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }

@@ -1,39 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Clean Blog with Decap CMS
 
-## Getting Started
+A minimal, clean blogging setup using **Decap CMS** (formerly Netlify CMS) for content management and **OpenAI** for content enhancement.
 
-First, run the development server:
+## ✨ Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **🎯 Simple & Clean**: Focused solely on Decap CMS - no custom editors or Firebase
+- **🤖 AI-Powered**: OpenAI integration for content enrichment and improvement
+- **📝 Git-Based**: All content stored in Git, managed through Decap CMS
+- **🚀 Static**: Next.js static site generation for fast loading
+- **📱 Responsive**: Clean, minimal design
+
+## 🏗️ Structure
+
+```
+├── content/posts/          # Blog posts (MDX files)
+├── public/admin/           # Decap CMS admin interface
+│   ├── index.html         # Clean admin page
+│   └── config.yml         # Simplified CMS config
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── ai-enrich/ # AI metadata generation
+│   │   │   └── ai-improve/ # AI content improvement
+│   │   ├── posts/[slug]/  # Blog post pages
+│   │   └── admin/         # Admin redirect
+│   ├── components/
+│   │   └── SiteHeader.tsx # Simple navigation
+│   └── lib/
+│       └── posts.ts       # Post utilities
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Getting Started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clone and Install**
+   ```bash
+   npm install
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Set up OpenAI**
+   ```bash
+   # Add to .env.local
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
 
-## Learn More
+3. **Run Development Server**
+   ```bash
+   npm run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. **Access Admin**
+   - Go to `/admin/` for Decap CMS interface
+   - Authenticate with Netlify Identity or Git Gateway
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🤖 AI Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### AI Enrich
+- Generates summary, tags, category, and meta description
+- Accessible via "🤖 AI Enrich" button in Decap CMS
 
-## Deploy on Vercel
+### AI Improve
+- Enhances content for better readability and flow
+- Fixes grammar and improves structure
+- Accessible in the admin interface
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📝 Content Management
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Create Posts**: Use `/admin/` interface
+- **Edit Content**: Simple markdown editor with preview
+- **Publish**: Git-based workflow with editorial review
+- **Media**: Upload images directly through CMS
+
+## 🎨 Clean Features
+
+- ✅ No Firebase dependencies
+- ✅ No custom authentication
+- ✅ No complex state management
+- ✅ Simple, focused UI
+- ✅ Clean preview (no raw HTML visible)
+- ✅ Minimal configuration
+
+## 🔧 Deployment
+
+Deploy to Netlify with:
+- Build command: `npm run build`
+- Publish directory: `out` (if using static export) or `.next`
+- Environment variables: `OPENAI_API_KEY`
+
+The site uses Decap CMS with Git Gateway for seamless content management.
 
 # Blog
 

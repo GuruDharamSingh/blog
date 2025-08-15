@@ -6,12 +6,11 @@ media_folder: "public/uploads"
 public_folder: "/uploads"
 
 # Global settings
-publish_mode: editorial_workflow # Enables draft/review/publish workflow
+publish_mode: editorial_workflow
 site_url: https://bloggds.netlify.app
 display_url: https://bloggds.netlify.app
 logo_url: https://bloggds.netlify.app/favicon.ico
 
-# Editor settings
 editor:
   preview: true
 
@@ -19,14 +18,14 @@ collections:
   - name: "posts"
     label: "📝 Blog Posts"
     label_singular: "Blog Post"
-    description: "Create and manage your blog posts with AI assistance"
+    description: "Create and manage your blog posts"
     folder: "content/posts"
     format: "frontmatter"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     extension: "mdx"
     preview_path: "posts/{{slug}}"
-    sortable_fields: ["title", "date", "category", "featured"]
+    sortable_fields: ["title", "date", "category"]
     view_filters:
       - label: "📚 All Posts"
         field: published
@@ -34,107 +33,76 @@ collections:
       - label: "📄 Drafts"
         field: published
         pattern: false
-      - label: "⭐ Featured"
-        field: featured
-        pattern: true
-      - label: "👤 Personal"
-        field: category
-        pattern: "Personal"
-      - label: "💻 Tech"
-        field: category
-        pattern: "Tech"
-      - label: "✈️ Travel"
-        field: category
-        pattern: "Travel"
-    view_groups:
-      - label: "Year"
-        field: date
-        pattern: '\d{4}'
-      - label: "Category"
-        field: category
     fields:
       # Basic Info
-      - label: "📝 Title"
+      - label: "Title"
         name: "title"
         widget: "string"
-        hint: "This will be the main heading of your post. Make it catchy!"
-      - label: "📅 Date"
+        hint: "The main heading of your post"
+      - label: "Date"
         name: "date"
         widget: "datetime"
         format: "YYYY-MM-DD"
         date_format: "YYYY-MM-DD"
         time_format: false
         default: ""
-        hint: "Publication date for your post"
-      - label: "📄 Summary"
+      - label: "Summary"
         name: "summary"
         widget: "text"
-        hint: "Brief description (appears on homepage and in search results). TIP: Use AI Enrich to generate this!"
+        hint: "Brief description (appears on homepage)"
         required: false
       
       # Organization
-      - label: "📂 Category"
+      - label: "Category"
         name: "category"
         widget: "select"
         options: 
-          - { label: "👤 Personal", value: "Personal" }
-          - { label: "💻 Tech", value: "Tech" }
-          - { label: "✈️ Travel", value: "Travel" }
-          - { label: "🌱 Life", value: "Life" }
-          - { label: "💭 Thoughts", value: "Thoughts" }
-          - { label: "🛠️ Projects", value: "Projects" }
+          - { label: "Personal", value: "Personal" }
+          - { label: "Tech", value: "Tech" }
+          - { label: "Travel", value: "Travel" }
+          - { label: "Life", value: "Life" }
+          - { label: "Thoughts", value: "Thoughts" }
+          - { label: "Projects", value: "Projects" }
         default: "Personal"
-        hint: "Choose the best category for your post. TIP: AI can suggest this!"
-      - label: "🏷️ Tags"
+      - label: "Tags"
         name: "tags"
         widget: "list"
-        hint: "Add relevant tags (press Enter after each). TIP: Use AI Enrich to generate these!"
+        hint: "Add relevant tags"
         required: false
         allow_add: true
         collapsed: false
         field: { label: "Tag", name: "tag", widget: "string" }
       
       # Media
-      - label: "🖼️ Featured Image"
+      - label: "Featured Image"
         name: "featured_image"
         widget: "image"
-        hint: "Main image that represents this post (shows up in social shares)"
+        hint: "Main image for this post"
         required: false
         allow_multiple: false
       
-      # SEO & Social
-      - label: "🔍 Meta Description (SEO)"
+      # SEO
+      - label: "Meta Description"
         name: "meta_description"
         widget: "text"
-        hint: "SEO description for search engines (max 160 chars). Leave blank to use summary. TIP: AI can generate this!"
+        hint: "SEO description (max 160 chars)"
         required: false
         pattern: [".{0,160}", "Must be 160 characters or less"]
       
       # Publishing
-      - label: "⭐ Featured Post"
+      - label: "Featured Post"
         name: "featured"
         widget: "boolean"
         default: false
-        hint: "Mark as featured to highlight on homepage"
-      - label: "🚀 Published"
+        hint: "Highlight on homepage"
+      - label: "Published"
         name: "published"
         widget: "boolean"
         default: true
-        hint: "Ready to publish? Turn this on when your post is complete"
+        hint: "Ready to publish"
       
       # Content
-      - label: "✍️ Content"
+      - label: "Content"
         name: "body"
         widget: "markdown"
-        hint: "Write your post content here. You can use Markdown formatting. TIP: Write first, then use AI Enrich!"
-        toolbar_buttons:
-          - bold
-          - italic
-          - code
-          - link
-          - heading-one
-          - heading-two
-          - heading-three
-          - quote
-          - bulleted-list
-          - numbered-list
+        hint: "Write your post content here"
