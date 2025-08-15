@@ -50,71 +50,338 @@
     <script>
       // AI Enhancement Functions
       async function enrichWithAI() {
-        const title = document.querySelector('[data-testid="title-field-input"]')?.value || '';
-        const body = document.querySelector('.CodeMirror')?.CodeMirror?.getValue() || '';
+        const showProgress = (message) => {
+          const progressDiv = document.getElementById('ai-progress') || (() => {
+            const div = document.createElement('div');
+            div.id = 'ai-progress';
+            div.style.cssText = 'position:fixed;top:20px;right:20px;background:#4f46e5;color:white;padding:12px 16px;border-radius:8px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+            document.body.appendChild(div);
+            return div;
+          })();
+          progressDiv.textContent = message;
+          progressDiv.style.display = 'block';
+        };
+
+        const hideProgress = () => {
+          const progressDiv = document.getElementById('ai-progress');
+          if (progressDiv) progressDiv.style.display = 'none';
+        };
+
+        // Multiple ways to find the title field
+        const titleSelectors = [
+          'input[name="title"]',
+          '[data-testid*="title"]',
+          'input[placeholder*="title" i]',
+          '.cms-editor-visual input[type="text"]'
+        ];
         
-        if (!title || !body) {
-          alert('Please add a title and some content first!');
+        let titleField = null;
+        let titleValue = '';
+        
+        for (const selector of titleSelectors) {
+          titleField = document.querySelector(selector);
+          if (titleField) {
+            titleValue = titleField.value || '';
+            break;
+          }
+        }
+
+        // Multiple ways to find the body/content
+        let bodyValue = '';
+        
+        // Try CodeMirror
+        const codeMirrors = document.querySelectorAll('.CodeMirror');
+        for (const cm of codeMirrors) {
+          if (cm.CodeMirror) {
+            bodyValue = cm.CodeMirror.getValue();
+            break;
+          }
+        }
+        
+        // Try textarea
+        if (!bodyValue) {
+          const textareas = document.querySelectorAll('textarea');
+          for (const ta of textareas) {
+            if (ta.value && ta.value.length > 20) {
+              bodyValue = ta.value;
+              break;
+            }
+          }
+        }
+
+        console.log('Found title:', titleValue);
+        console.log('Found body length:', bodyValue.length);
+        
+        if (!titleValue || !bodyValue) {
+          alert('❌ Please add a title and some content first!\n\nTitle found: ' + (titleValue ? 'Yes' : 'No') + '\nContent found: ' + (bodyValue ? 'Yes (' + bodyValue.length + ' chars)' : 'No'));
           return;
         }
+
+        showProgress('🤖 AI is analyzing your post...');
 
         try {
           const response = await fetch('/api/ai-enrich', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, content: body })
+            body: JSON.stringify({ title: titleValue, content: bodyValue })
           });
           
           const data = await response.json();
           
           if (data.error) {
-            alert('AI Error: ' + data.error);
+            hideProgress();
+            alert('❌ AI Error: ' + data.error);
             return;
           }
 
-          // Fill in the generated data
+          showProgress('✨ Applying AI suggestions...');
+
+          // Fill in the generated data with multiple selector strategies
+          let fieldsUpdated = 0;
+
+          // Update summary
           if (data.summary) {
-            const summaryField = document.querySelector('[data-testid="summary-field-input"]');
-            if (summaryField) summaryField.value = data.summary;
+            const summarySelectors = [
+              'textarea[name="summary"]',
+              '[data-testid*="summary"]',
+              'textarea[placeholder*="summary" i]'
+            ];
+            
+            for (const selector of summarySelectors) {
+              const field = document.querySelector(selector);
+              if (field) {
+                field.value = data.summary;
+                field.dispatchEvent(new Event('input', { bubbles: true }));
+                field.dispatchEvent(new Event('change', { bubbles: true }));
+                fieldsUpdated++;
+                break;
+              }
+            }
           }
           
+          // Update category
           if (data.category) {
-            const categoryField = document.querySelector('[data-testid="category-field-input"]');
-            if (categoryField) categoryField.value = data.category;
+            const categorySelectors = [
+              'select[name="category"]',
+              '[data-testid*="category"] select',
+              'select option[value="' + data.category + '"]'
+            ];
+            
+            for (const selector of categorySelectors) {
+              const field = document.querySelector(selector);
+              if (field) {
+                if (field.tagName === 'SELECT') {
+                  field.value = data.category;
+                  field.dispatchEvent(new Event('change', { bubbles: true }));
+                  fieldsUpdated++;
+                }
+                break;
+              }
+            }
           }
           
+          // Update meta description
           if (data.meta_description) {
-            const metaField = document.querySelector('[data-testid="meta_description-field-input"]');
-            if (metaField) metaField.value = data.meta_description;
+            const metaSelectors = [
+              'textarea[name="meta_description"]',
+              '[data-testid*="meta_description"]',
+              'textarea[placeholder*="description" i]'
+            ];
+            
+            for (const selector of metaSelectors) {
+              const field = document.querySelector(selector);
+              if (field) {
+                field.value = data.meta_description;
+                field.dispatchEvent(new Event('input', { bubbles: true }));
+                field.dispatchEvent(new Event('change', { bubbles: true }));
+                fieldsUpdated++;
+                break;
+              }
+            }
+          }
+
+          // Update tags
+          if (data.tags && data.tags.length > 0) {
+            // For Decap CMS list fields, we need to trigger the add functionality
+            console.log('Tags to add:', data.tags);
+            // This is more complex in Decap CMS, so we'll show them to the user
           }
           
-          alert('✨ AI enrichment complete! Check the Summary, Category, and Meta Description fields.');
+          hideProgress();
+          
+          const tagInfo = data.tags && data.tags.length > 0 ? 
+            '\n\n🏷️ Suggested tags: ' + data.tags.join(', ') + '\n(Please add these manually to the Tags field)' : '';
+          
+          alert('✨ AI enrichment complete!\n\n' + 
+                '📊 Fields updated: ' + fieldsUpdated + '\n' +
+                '📝 Summary: ' + (data.summary || 'N/A') + '\n' +
+                '📂 Category: ' + (data.category || 'N/A') + '\n' +
+                '🔍 Meta: ' + (data.meta_description || 'N/A') + 
+                tagInfo);
           
         } catch (error) {
-          alert('Failed to enrich with AI: ' + error.message);
+          hideProgress();
+          console.error('AI enrichment error:', error);
+          alert('❌ Failed to enrich with AI: ' + error.message);
         }
       }
 
-      // Add AI button when CMS loads
-      function addAIButton() {
-        setTimeout(() => {
-          const toolbar = document.querySelector('.css-1t67c8i') || document.querySelector('.css-1lx9q1k');
-          if (toolbar && !document.querySelector('.ai-enhance-btn')) {
-            const aiButton = document.createElement('button');
-            aiButton.className = 'ai-button ai-enhance-btn';
-            aiButton.innerHTML = '🤖 AI Enrich';
-            aiButton.onclick = enrichWithAI;
-            toolbar.appendChild(aiButton);
+      // Improved content enhancement
+      async function improveContent() {
+        const showProgress = (message) => {
+          const progressDiv = document.getElementById('ai-progress') || (() => {
+            const div = document.createElement('div');
+            div.id = 'ai-progress';
+            div.style.cssText = 'position:fixed;top:20px;right:20px;background:#059669;color:white;padding:12px 16px;border-radius:8px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+            document.body.appendChild(div);
+            return div;
+          })();
+          progressDiv.textContent = message;
+          progressDiv.style.display = 'block';
+        };
+
+        const hideProgress = () => {
+          const progressDiv = document.getElementById('ai-progress');
+          if (progressDiv) progressDiv.style.display = 'none';
+        };
+
+        // Get content
+        let bodyValue = '';
+        let bodyField = null;
+        
+        // Try CodeMirror
+        const codeMirrors = document.querySelectorAll('.CodeMirror');
+        for (const cm of codeMirrors) {
+          if (cm.CodeMirror) {
+            bodyValue = cm.CodeMirror.getValue();
+            bodyField = cm.CodeMirror;
+            break;
           }
-        }, 2000);
+        }
+
+        if (!bodyValue) {
+          alert('❌ Please add some content to improve first!');
+          return;
+        }
+
+        showProgress('🤖 AI is improving your content...');
+
+        try {
+          const response = await fetch('/api/ai-improve', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: bodyValue })
+          });
+          
+          const data = await response.json();
+          
+          if (data.error) {
+            hideProgress();
+            alert('❌ AI Error: ' + data.error);
+            return;
+          }
+
+          if (data.improved_content && bodyField) {
+            bodyField.setValue(data.improved_content);
+          }
+          
+          hideProgress();
+          alert('✨ Content improved!\n\n📝 AI has enhanced your writing with better structure, clarity, and flow.');
+          
+        } catch (error) {
+          hideProgress();
+          console.error('AI improvement error:', error);
+          alert('❌ Failed to improve content: ' + error.message);
+        }
       }
 
-      // Watch for CMS initialization
-      document.addEventListener('DOMContentLoaded', () => {
-        addAIButton();
-        // Keep trying to add button as CMS loads
-        setInterval(addAIButton, 3000);
-      });
+      // Add AI buttons when CMS loads
+      function addAIButtons() {
+        if (document.querySelector('.ai-enhance-btn')) return; // Already added
+
+        // Try to find a good place to add buttons
+        const possibleLocations = [
+          '.css-1t67c8i', // Decap toolbar
+          '.css-1lx9q1k', // Alternative toolbar
+          '.cms-editor-visual', // Editor area
+          '.css-qznt7j', // Another common selector
+          '[data-slate-editor="true"]' // Slate editor
+        ];
+
+        let targetLocation = null;
+        for (const selector of possibleLocations) {
+          targetLocation = document.querySelector(selector);
+          if (targetLocation) break;
+        }
+
+        // If no specific location, try to add to the editor container
+        if (!targetLocation) {
+          targetLocation = document.querySelector('.cms-editor') || 
+                          document.querySelector('[class*="editor"]') ||
+                          document.querySelector('[class*="cms"]');
+        }
+
+        if (targetLocation) {
+          // Create AI toolbar
+          const aiToolbar = document.createElement('div');
+          aiToolbar.className = 'ai-toolbar';
+          aiToolbar.style.cssText = 'margin: 10px 0; padding: 10px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 8px; border-left: 4px solid #4f46e5;';
+          
+          const enrichButton = document.createElement('button');
+          enrichButton.className = 'ai-button ai-enhance-btn';
+          enrichButton.innerHTML = '🤖 AI Enrich Metadata';
+          enrichButton.onclick = enrichWithAI;
+          enrichButton.title = 'Generate summary, tags, category, and meta description';
+          
+          const improveButton = document.createElement('button');
+          improveButton.className = 'ai-button ai-improve-btn';
+          improveButton.innerHTML = '✨ AI Improve Content';
+          improveButton.onclick = improveContent;
+          improveButton.title = 'Enhance writing style and structure';
+          
+          aiToolbar.appendChild(enrichButton);
+          aiToolbar.appendChild(improveButton);
+          
+          // Add a small label
+          const label = document.createElement('div');
+          label.style.cssText = 'font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600;';
+          label.textContent = '✨ AI Writing Assistant';
+          aiToolbar.insertBefore(label, enrichButton);
+          
+          targetLocation.insertBefore(aiToolbar, targetLocation.firstChild);
+          
+          console.log('AI buttons added to:', targetLocation);
+        } else {
+          console.log('Could not find suitable location for AI buttons');
+        }
+      }
+
+      // Wait for CMS to load and keep trying to add buttons
+      let attempts = 0;
+      const maxAttempts = 20;
+      
+      function waitForCMSAndAddButtons() {
+        attempts++;
+        if (attempts > maxAttempts) {
+          console.log('Stopped trying to add AI buttons after', maxAttempts, 'attempts');
+          return;
+        }
+        
+        // Check if CMS is loaded
+        if (document.querySelector('.cms-editor') || 
+            document.querySelector('[class*="cms"]') ||
+            document.querySelector('.CodeMirror')) {
+          addAIButtons();
+        } else {
+          setTimeout(waitForCMSAndAddButtons, 1000);
+        }
+      }
+
+      // Start watching for CMS
+      document.addEventListener('DOMContentLoaded', waitForCMSAndAddButtons);
+      
+      // Also try after a delay
+      setTimeout(waitForCMSAndAddButtons, 2000);
 
       // Register custom preview for better post preview
       CMS.registerPreviewTemplate('posts', ({ entry, widgetFor, widgetsFor }) => {
