@@ -3,9 +3,9 @@ import { getPostBySlug, getAllCreativeMeta } from '@/lib/posts';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 
 interface CreativePageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateStaticParams() {
@@ -15,8 +15,9 @@ export async function generateStaticParams() {
   }));
 }
 
-export default function CreativePage({ params }: CreativePageProps) {
-  const creative = getPostBySlug(params.slug, 'creative');
+export default async function CreativePage({ params }: CreativePageProps) {
+  const { slug } = await params;
+  const creative = getPostBySlug(slug, 'creative');
   
   if (!creative) {
     notFound();

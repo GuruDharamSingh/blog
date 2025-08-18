@@ -3,9 +3,9 @@ import { getPostBySlug, getAllEventsMeta } from '@/lib/posts';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 
 interface EventPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateStaticParams() {
@@ -15,8 +15,9 @@ export async function generateStaticParams() {
   }));
 }
 
-export default function EventPage({ params }: EventPageProps) {
-  const event = getPostBySlug(params.slug, 'event');
+export default async function EventPage({ params }: EventPageProps) {
+  const { slug } = await params;
+  const event = getPostBySlug(slug, 'event');
   
   if (!event) {
     notFound();

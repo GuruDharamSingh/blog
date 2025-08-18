@@ -11,9 +11,9 @@ const components = {
 };
 
 interface TaskPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateStaticParams() {
