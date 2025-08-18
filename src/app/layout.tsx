@@ -26,12 +26,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-neutral-50 text-neutral-900`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
       >
         <SiteHeader />
         <main className="min-h-screen">{children}</main>
-        <footer className="border-t border-neutral-200 mt-24 py-8 text-center text-sm text-neutral-500">
-          © {new Date().getFullYear()} My Blog.
+        <footer className="border-t border-gray-800 mt-24 py-8 text-center text-sm text-gray-500">
+          © {new Date().getFullYear()} Justin's Blog.
         </footer>
       </body>
     </html>

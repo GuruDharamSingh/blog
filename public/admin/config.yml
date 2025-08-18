@@ -106,3 +106,898 @@ collections:
         name: "body"
         widget: "markdown"
         hint: "Write your post content here"
+
+  # Meeting/Event Template
+  - name: "events"
+    label: "📅 Events & Meetings"
+    label_singular: "Event"
+    description: "Create structured events with RSVP and location details"
+    folder: "content/events"
+    format: "frontmatter"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: "mdx"
+    preview_path: "events/{{slug}}"
+    sortable_fields: ["title", "event_date", "location"]
+    view_filters:
+      - label: "🎯 Upcoming Events"
+        field: event_date
+        pattern: true
+      - label: "📋 All Events"
+        field: published
+        pattern: true
+    fields:
+      # Basic Event Info
+      - label: "Event Title"
+        name: "title"
+        widget: "string"
+        hint: "Name of your event or meeting"
+      - label: "Event Type"
+        name: "event_type"
+        widget: "select"
+        options:
+          - { label: "📋 Meeting", value: "meeting" }
+          - { label: "🎉 Social Event", value: "social" }
+          - { label: "🎓 Workshop", value: "workshop" }
+          - { label: "📢 Announcement", value: "announcement" }
+          - { label: "🏃 Activity", value: "activity" }
+        default: "meeting"
+      
+      # Timing
+      - label: "Event Date & Time"
+        name: "event_date"
+        widget: "datetime"
+        format: "YYYY-MM-DD HH:mm"
+        date_format: "YYYY-MM-DD"
+        time_format: "HH:mm"
+        hint: "When does this event happen?"
+      - label: "Duration (minutes)"
+        name: "duration"
+        widget: "number"
+        min: 15
+        max: 480
+        default: 60
+        hint: "How long will this last?"
+      - label: "Time Zone"
+        name: "timezone"
+        widget: "string"
+        default: "EST"
+        hint: "e.g., EST, PST, UTC"
+      
+      # Location
+      - label: "Location Type"
+        name: "location_type"
+        widget: "select"
+        options:
+          - { label: "🏢 In Person", value: "in_person" }
+          - { label: "💻 Virtual", value: "virtual" }
+          - { label: "🔄 Hybrid", value: "hybrid" }
+        default: "virtual"
+      - label: "Location Details"
+        name: "location"
+        widget: "object"
+        fields:
+          - label: "Address/Venue"
+            name: "address"
+            widget: "text"
+            required: false
+            hint: "Physical address or venue name"
+          - label: "Virtual Link"
+            name: "virtual_link"
+            widget: "string"
+            required: false
+            hint: "Zoom, Teams, or other meeting link"
+          - label: "Access Code"
+            name: "access_code"
+            widget: "string"
+            required: false
+            hint: "Meeting ID or access code"
+          - label: "Special Instructions"
+            name: "instructions"
+            widget: "text"
+            required: false
+            hint: "Parking, entry instructions, etc."
+      
+      # RSVP & Capacity
+      - label: "RSVP Required"
+        name: "rsvp_required"
+        widget: "boolean"
+        default: true
+      - label: "Max Capacity"
+        name: "max_capacity"
+        widget: "number"
+        min: 1
+        required: false
+        hint: "Leave empty for unlimited"
+      - label: "RSVP Contact"
+        name: "rsvp_contact"
+        widget: "object"
+        fields:
+          - label: "Contact Email"
+            name: "email"
+            widget: "string"
+            required: false
+          - label: "Contact Phone"
+            name: "phone"
+            widget: "string"
+            required: false
+          - label: "RSVP Form Link"
+            name: "form_link"
+            widget: "string"
+            required: false
+            hint: "External form URL"
+      
+      # Organization
+      - label: "Organizer"
+        name: "organizer"
+        widget: "object"
+        fields:
+          - label: "Name"
+            name: "name"
+            widget: "string"
+            default: "Justin Singh"
+          - label: "Email"
+            name: "email"
+            widget: "string"
+            required: false
+          - label: "Bio"
+            name: "bio"
+            widget: "text"
+            required: false
+      
+      # Content
+      - label: "Event Description"
+        name: "summary"
+        widget: "text"
+        hint: "Brief overview of the event"
+      - label: "Agenda/Topics"
+        name: "agenda"
+        widget: "list"
+        required: false
+        fields:
+          - label: "Topic"
+            name: "topic"
+            widget: "string"
+          - label: "Duration (minutes)"
+            name: "duration"
+            widget: "number"
+            min: 5
+            default: 15
+          - label: "Speaker/Lead"
+            name: "speaker"
+            widget: "string"
+            required: false
+      
+      # Requirements & Preparation
+      - label: "What to Bring"
+        name: "requirements"
+        widget: "list"
+        required: false
+        hint: "Items participants should bring"
+        field: { label: "Item", name: "item", widget: "string" }
+      - label: "Preparation Materials"
+        name: "prep_materials"
+        widget: "list"
+        required: false
+        fields:
+          - label: "Material Name"
+            name: "name"
+            widget: "string"
+          - label: "Link/Description"
+            name: "link"
+            widget: "string"
+          - label: "Required"
+            name: "required"
+            widget: "boolean"
+            default: false
+      
+      # Media
+      - label: "Event Image"
+        name: "featured_image"
+        widget: "image"
+        required: false
+        hint: "Visual for the event"
+      
+      # Notifications
+      - label: "Send Reminders"
+        name: "reminders"
+        widget: "object"
+        fields:
+          - label: "1 Week Before"
+            name: "week_before"
+            widget: "boolean"
+            default: true
+          - label: "1 Day Before"
+            name: "day_before"
+            widget: "boolean"
+            default: true
+          - label: "1 Hour Before"
+            name: "hour_before"
+            widget: "boolean"
+            default: false
+      
+      # Meta
+      - label: "Tags"
+        name: "tags"
+        widget: "list"
+        hint: "Event-related tags"
+        required: false
+        allow_add: true
+        field: { label: "Tag", name: "tag", widget: "string" }
+      - label: "Published"
+        name: "published"
+        widget: "boolean"
+        default: true
+      
+      # Detailed Content
+      - label: "Full Description"
+        name: "body"
+        widget: "markdown"
+        hint: "Detailed event information, agenda, expectations"
+
+  # Creative Multimedia Template
+  - name: "creative"
+    label: "🎨 Creative Posts"
+    label_singular: "Creative Post"
+    description: "Rich multimedia posts with galleries, videos, and interactive elements"
+    folder: "content/creative"
+    format: "frontmatter"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: "mdx"
+    preview_path: "creative/{{slug}}"
+    sortable_fields: ["title", "date", "creative_type"]
+    view_filters:
+      - label: "🎭 All Creative"
+        field: published
+        pattern: true
+      - label: "📸 Photo Stories"
+        field: creative_type
+        pattern: "photo_story"
+      - label: "🎬 Video Content"
+        field: creative_type
+        pattern: "video_showcase"
+    fields:
+      # Basic Info
+      - label: "Title"
+        name: "title"
+        widget: "string"
+        hint: "Creative, engaging title"
+      - label: "Creative Type"
+        name: "creative_type"
+        widget: "select"
+        options:
+          - { label: "📸 Photo Story", value: "photo_story" }
+          - { label: "🎬 Video Showcase", value: "video_showcase" }
+          - { label: "🎨 Art Project", value: "art_project" }
+          - { label: "🎵 Music/Audio", value: "music_audio" }
+          - { label: "📝 Creative Writing", value: "creative_writing" }
+          - { label: "🔗 Mixed Media", value: "mixed_media" }
+          - { label: "💡 Project Showcase", value: "project_showcase" }
+        default: "mixed_media"
+      - label: "Date"
+        name: "date"
+        widget: "datetime"
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+      
+      # Visual Elements
+      - label: "Hero Media"
+        name: "hero_media"
+        widget: "object"
+        fields:
+          - label: "Hero Image"
+            name: "image"
+            widget: "image"
+            required: false
+            hint: "Main visual for this post"
+          - label: "Hero Video"
+            name: "video"
+            widget: "string"
+            required: false
+            hint: "YouTube, Vimeo, or direct video URL"
+          - label: "Alt Text"
+            name: "alt_text"
+            widget: "string"
+            required: false
+            hint: "Describe the visual for accessibility"
+      
+      # Gallery Section
+      - label: "Image Gallery"
+        name: "gallery"
+        widget: "list"
+        required: false
+        fields:
+          - label: "Image"
+            name: "image"
+            widget: "image"
+          - label: "Caption"
+            name: "caption"
+            widget: "text"
+            required: false
+          - label: "Credit/Source"
+            name: "credit"
+            widget: "string"
+            required: false
+      
+      # Video Content
+      - label: "Video Collection"
+        name: "videos"
+        widget: "list"
+        required: false
+        fields:
+          - label: "Video Title"
+            name: "title"
+            widget: "string"
+          - label: "Video URL"
+            name: "url"
+            widget: "string"
+            hint: "YouTube, Vimeo, or direct link"
+          - label: "Description"
+            name: "description"
+            widget: "text"
+            required: false
+          - label: "Duration"
+            name: "duration"
+            widget: "string"
+            required: false
+            hint: "e.g., '5:30' or '2 minutes'"
+      
+      # Interactive Elements
+      - label: "Interactive Components"
+        name: "interactive"
+        widget: "object"
+        required: false
+        fields:
+          - label: "Poll Question"
+            name: "poll"
+            widget: "object"
+            required: false
+            fields:
+              - label: "Question"
+                name: "question"
+                widget: "string"
+              - label: "Options"
+                name: "options"
+                widget: "list"
+                field: { label: "Option", name: "option", widget: "string" }
+          - label: "Embedded Content"
+            name: "embeds"
+            widget: "list"
+            required: false
+            fields:
+              - label: "Embed Type"
+                name: "type"
+                widget: "select"
+                options: ["codepen", "twitter", "instagram", "spotify", "custom"]
+              - label: "Embed URL/Code"
+                name: "code"
+                widget: "text"
+          - label: "Call-to-Action"
+            name: "cta"
+            widget: "object"
+            required: false
+            fields:
+              - label: "CTA Text"
+                name: "text"
+                widget: "string"
+              - label: "CTA Link"
+                name: "link"
+                widget: "string"
+              - label: "CTA Style"
+                name: "style"
+                widget: "select"
+                options: ["primary", "secondary", "outline"]
+                default: "primary"
+      
+      # References & Collaboration
+      - label: "Related Posts"
+        name: "related_posts"
+        widget: "list"
+        required: false
+        fields:
+          - label: "Post Title"
+            name: "title"
+            widget: "string"
+          - label: "Post URL/Slug"
+            name: "url"
+            widget: "string"
+          - label: "Relationship"
+            name: "relationship"
+            widget: "select"
+            options: ["sequel", "prequel", "related", "inspiration"]
+            default: "related"
+      
+      - label: "Collaborators"
+        name: "collaborators"
+        widget: "list"
+        required: false
+        fields:
+          - label: "Name"
+            name: "name"
+            widget: "string"
+          - label: "Role"
+            name: "role"
+            widget: "string"
+            hint: "e.g., Photographer, Co-writer, Designer"
+          - label: "Social/Website"
+            name: "link"
+            widget: "string"
+            required: false
+      
+      # Technical Details
+      - label: "Creation Details"
+        name: "creation"
+        widget: "object"
+        required: false
+        fields:
+          - label: "Tools Used"
+            name: "tools"
+            widget: "list"
+            required: false
+            field: { label: "Tool", name: "tool", widget: "string" }
+          - label: "Time to Create"
+            name: "time_spent"
+            widget: "string"
+            required: false
+            hint: "e.g., '3 hours', '2 weeks'"
+          - label: "Difficulty Level"
+            name: "difficulty"
+            widget: "select"
+            options: ["Beginner", "Intermediate", "Advanced", "Expert"]
+            required: false
+          - label: "Budget/Cost"
+            name: "budget"
+            widget: "string"
+            required: false
+            hint: "Free, $50, etc."
+      
+      # Engagement
+      - label: "Audience Interaction"
+        name: "interaction"
+        widget: "object"
+        required: false
+        fields:
+          - label: "Comments Enabled"
+            name: "comments"
+            widget: "boolean"
+            default: true
+          - label: "Share Challenge"
+            name: "challenge"
+            widget: "text"
+            required: false
+            hint: "Encourage readers to try something similar"
+          - label: "Discussion Questions"
+            name: "questions"
+            widget: "list"
+            required: false
+            field: { label: "Question", name: "question", widget: "string" }
+      
+      # Standard Fields
+      - label: "Summary"
+        name: "summary"
+        widget: "text"
+        hint: "Brief description of this creative work"
+      - label: "Tags"
+        name: "tags"
+        widget: "list"
+        hint: "Creative, project, or topic tags"
+        required: false
+        allow_add: true
+        field: { label: "Tag", name: "tag", widget: "string" }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options: 
+          - { label: "Creative", value: "Creative" }
+          - { label: "Projects", value: "Projects" }
+          - { label: "Art", value: "Art" }
+          - { label: "Photography", value: "Photography" }
+          - { label: "Video", value: "Video" }
+          - { label: "Music", value: "Music" }
+          - { label: "Writing", value: "Writing" }
+        default: "Creative"
+      - label: "Featured"
+        name: "featured"
+        widget: "boolean"
+        default: false
+        hint: "Highlight on homepage"
+      - label: "Published"
+        name: "published"
+        widget: "boolean"
+        default: true
+      
+      # Main Content
+      - label: "Content"
+        name: "body"
+        widget: "markdown"
+        hint: "Tell the story behind your creation, process, inspiration, and learnings"
+
+  # Tasks & To-Do Template
+  - name: "tasks"
+    label: "✅ Tasks & To-Do Lists"
+    label_singular: "Task List"
+    description: "Create task lists with commentary, check-ups, and progress tracking"
+    folder: "content/tasks"
+    format: "frontmatter"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: "mdx"
+    preview_path: "tasks/{{slug}}"
+    sortable_fields: ["title", "date", "priority", "due_date", "status"]
+    view_filters:
+      - label: "🎯 Active Tasks"
+        field: status
+        pattern: "active"
+      - label: "✅ Completed"
+        field: status
+        pattern: "completed"
+      - label: "⚠️ Overdue"
+        field: status
+        pattern: "overdue"
+      - label: "🔍 Needs Check-up"
+        field: checkup_required
+        pattern: true
+    fields:
+      # Basic Task Info
+      - label: "Task List Title"
+        name: "title"
+        widget: "string"
+        hint: "Name of this task list or project"
+      - label: "Date Created"
+        name: "date"
+        widget: "datetime"
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+      - label: "Priority Level"
+        name: "priority"
+        widget: "select"
+        options:
+          - { label: "🔥 Urgent", value: "urgent" }
+          - { label: "📋 High", value: "high" }
+          - { label: "📝 Medium", value: "medium" }
+          - { label: "💭 Low", value: "low" }
+        default: "medium"
+      - label: "Due Date"
+        name: "due_date"
+        widget: "datetime"
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        required: false
+        hint: "When should this be completed?"
+      
+      # Task Status & Completion
+      - label: "Current Status"
+        name: "status"
+        widget: "select"
+        options:
+          - { label: "📝 Planning", value: "planning" }
+          - { label: "🎯 Active", value: "active" }
+          - { label: "⏸️ On Hold", value: "on_hold" }
+          - { label: "✅ Completed", value: "completed" }
+          - { label: "⚠️ Overdue", value: "overdue" }
+          - { label: "❌ Cancelled", value: "cancelled" }
+        default: "planning"
+      - label: "Completion Percentage"
+        name: "completion_percentage"
+        widget: "number"
+        min: 0
+        max: 100
+        default: 0
+        hint: "0-100% complete"
+      - label: "Completion Date"
+        name: "completion_date"
+        widget: "datetime"
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        required: false
+        hint: "When was this completed?"
+      
+      # Task Organization
+      - label: "Project/Category"
+        name: "project"
+        widget: "select"
+        options:
+          - { label: "💼 Work", value: "work" }
+          - { label: "🏠 Personal", value: "personal" }
+          - { label: "🚀 Projects", value: "projects" }
+          - { label: "📚 Learning", value: "learning" }
+          - { label: "🎯 Goals", value: "goals" }
+          - { label: "🛠️ Maintenance", value: "maintenance" }
+          - { label: "📞 Social", value: "social" }
+        default: "personal"
+      - label: "Tags"
+        name: "tags"
+        widget: "list"
+        required: false
+        allow_add: true
+        hint: "Add relevant tags"
+        field: { label: "Tag", name: "tag", widget: "string" }
+      
+      # Individual Tasks
+      - label: "Task Items"
+        name: "tasks"
+        widget: "list"
+        fields:
+          - label: "Task Description"
+            name: "description"
+            widget: "string"
+          - label: "Completed"
+            name: "completed"
+            widget: "boolean"
+            default: false
+          - label: "Priority"
+            name: "priority"
+            widget: "select"
+            options: ["urgent", "high", "medium", "low"]
+            default: "medium"
+          - label: "Estimated Time"
+            name: "estimated_time"
+            widget: "string"
+            required: false
+            hint: "e.g., '2 hours', '30 minutes'"
+          - label: "Actual Time Spent"
+            name: "actual_time"
+            widget: "string"
+            required: false
+          - label: "Notes"
+            name: "notes"
+            widget: "text"
+            required: false
+          - label: "Subtasks"
+            name: "subtasks"
+            widget: "list"
+            required: false
+            fields:
+              - label: "Subtask"
+                name: "description"
+                widget: "string"
+              - label: "Completed"
+                name: "completed"
+                widget: "boolean"
+                default: false
+      
+      # Check-up System
+      - label: "Check-up Settings"
+        name: "checkup"
+        widget: "object"
+        fields:
+          - label: "Check-up Required"
+            name: "required"
+            widget: "boolean"
+            default: false
+            hint: "Should this task list have scheduled check-ups?"
+          - label: "Check-up Frequency"
+            name: "frequency"
+            widget: "select"
+            options:
+              - { label: "📅 Daily", value: "daily" }
+              - { label: "📅 Weekly", value: "weekly" }
+              - { label: "📅 Bi-weekly", value: "biweekly" }
+              - { label: "📅 Monthly", value: "monthly" }
+              - { label: "📅 Custom", value: "custom" }
+            default: "weekly"
+            required: false
+          - label: "Next Check-up Date"
+            name: "next_date"
+            widget: "datetime"
+            format: "YYYY-MM-DD"
+            date_format: "YYYY-MM-DD"
+            time_format: false
+            required: false
+          - label: "Last Check-up Date"
+            name: "last_date"
+            widget: "datetime"
+            format: "YYYY-MM-DD"
+            date_format: "YYYY-MM-DD"
+            time_format: false
+            required: false
+          - label: "Check-up Notes"
+            name: "notes"
+            widget: "text"
+            required: false
+            hint: "Notes from the last check-up"
+      
+      # Check-up History
+      - label: "Check-up History"
+        name: "checkup_history"
+        widget: "list"
+        required: false
+        fields:
+          - label: "Check-up Date"
+            name: "date"
+            widget: "datetime"
+            format: "YYYY-MM-DD"
+            date_format: "YYYY-MM-DD"
+            time_format: false
+          - label: "Progress Assessment"
+            name: "progress"
+            widget: "select"
+            options:
+              - { label: "🚀 Excellent Progress", value: "excellent" }
+              - { label: "✅ On Track", value: "on_track" }
+              - { label: "⚠️ Behind Schedule", value: "behind" }
+              - { label: "🔄 Needs Adjustment", value: "needs_adjustment" }
+              - { label: "🛑 Blocked", value: "blocked" }
+            default: "on_track"
+          - label: "Completion % at Check-up"
+            name: "completion_at_checkup"
+            widget: "number"
+            min: 0
+            max: 100
+          - label: "What Got Done"
+            name: "accomplishments"
+            widget: "text"
+            hint: "What was completed since last check-up?"
+          - label: "Challenges Faced"
+            name: "challenges"
+            widget: "text"
+            required: false
+          - label: "Next Steps"
+            name: "next_steps"
+            widget: "text"
+            hint: "What needs to happen before next check-up?"
+          - label: "Mood/Energy Level"
+            name: "mood"
+            widget: "select"
+            options:
+              - { label: "💪 Energized", value: "energized" }
+              - { label: "😊 Positive", value: "positive" }
+              - { label: "😐 Neutral", value: "neutral" }
+              - { label: "😴 Tired", value: "tired" }
+              - { label: "😰 Stressed", value: "stressed" }
+            required: false
+          - label: "Additional Notes"
+            name: "notes"
+            widget: "text"
+            required: false
+      
+      # Alerts & Notifications
+      - label: "Alert Flags"
+        name: "alerts"
+        widget: "object"
+        fields:
+          - label: "Overdue Check-up Flag"
+            name: "checkup_overdue"
+            widget: "boolean"
+            default: false
+            hint: "Automatically flagged when check-up is missed"
+          - label: "Days Since Last Check-up"
+            name: "days_since_checkup"
+            widget: "number"
+            required: false
+            hint: "Auto-calculated field"
+          - label: "Priority Escalation"
+            name: "escalated"
+            widget: "boolean"
+            default: false
+            hint: "Has this task been escalated due to delays?"
+          - label: "Requires Attention"
+            name: "needs_attention"
+            widget: "boolean"
+            default: false
+            hint: "Manual flag for items needing immediate attention"
+      
+      # Time Tracking
+      - label: "Time Tracking"
+        name: "time_tracking"
+        widget: "object"
+        required: false
+        fields:
+          - label: "Total Time Estimated"
+            name: "estimated_total"
+            widget: "string"
+            required: false
+            hint: "e.g., '10 hours', '3 days'"
+          - label: "Total Time Spent"
+            name: "actual_total"
+            widget: "string"
+            required: false
+          - label: "Time Sessions"
+            name: "sessions"
+            widget: "list"
+            required: false
+            fields:
+              - label: "Date"
+                name: "date"
+                widget: "datetime"
+                format: "YYYY-MM-DD"
+                date_format: "YYYY-MM-DD"
+                time_format: false
+              - label: "Duration"
+                name: "duration"
+                widget: "string"
+                hint: "e.g., '2 hours'"
+              - label: "What was worked on"
+                name: "description"
+                widget: "text"
+              - label: "Productivity Level"
+                name: "productivity"
+                widget: "select"
+                options: ["high", "medium", "low"]
+                default: "medium"
+      
+      # Dependencies & Blockers
+      - label: "Dependencies"
+        name: "dependencies"
+        widget: "list"
+        required: false
+        fields:
+          - label: "Dependency Description"
+            name: "description"
+            widget: "string"
+          - label: "Dependency Type"
+            name: "type"
+            widget: "select"
+            options:
+              - { label: "👥 Waiting on Person", value: "person" }
+              - { label: "📄 Waiting on Info", value: "information" }
+              - { label: "🛠️ Waiting on Tool/Resource", value: "resource" }
+              - { label: "⏰ Time-based", value: "time" }
+              - { label: "💰 Budget/Approval", value: "budget" }
+            default: "person"
+          - label: "Status"
+            name: "status"
+            widget: "select"
+            options: ["pending", "in_progress", "resolved", "blocked"]
+            default: "pending"
+          - label: "Expected Resolution"
+            name: "expected_date"
+            widget: "datetime"
+            format: "YYYY-MM-DD"
+            date_format: "YYYY-MM-DD"
+            time_format: false
+            required: false
+      
+      # Resources & Links
+      - label: "Resources"
+        name: "resources"
+        widget: "list"
+        required: false
+        fields:
+          - label: "Resource Name"
+            name: "name"
+            widget: "string"
+          - label: "Resource URL"
+            name: "url"
+            widget: "string"
+            required: false
+          - label: "Resource Type"
+            name: "type"
+            widget: "select"
+            options: ["document", "website", "tool", "contact", "reference"]
+            default: "document"
+          - label: "Description"
+            name: "description"
+            widget: "text"
+            required: false
+      
+      # Commentary Section
+      - label: "Initial Commentary"
+        name: "summary"
+        widget: "text"
+        hint: "Your thoughts, goals, and approach for this task list"
+      
+      # Publishing
+      - label: "Visibility"
+        name: "visibility"
+        widget: "select"
+        options:
+          - { label: "🔒 Private", value: "private" }
+          - { label: "👥 Team/Family", value: "team" }
+          - { label: "🌐 Public", value: "public" }
+        default: "private"
+      - label: "Published"
+        name: "published"
+        widget: "boolean"
+        default: true
+      
+      # Detailed Content & Commentary
+      - label: "Detailed Notes & Commentary"
+        name: "body"
+        widget: "markdown"
+        hint: "Detailed notes, methodology, learnings, and ongoing commentary about this task list"

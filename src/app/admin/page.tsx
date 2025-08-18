@@ -1,15 +1,21 @@
+"use client";
+
 export default function AdminPage() {
   return (
-    <div className="mx-auto max-w-3xl py-12 px-4 space-y-4">
-      <h1 className="text-2xl font-bold">Blog Admin</h1>
-      <p>Go to <a href="/admin/" className="text-blue-600 underline">/admin/</a> to access the Decap CMS interface.</p>
-      <script dangerouslySetInnerHTML={{
-        __html: `
-          if (typeof window !== 'undefined') {
-            window.location.href = '/admin/';
-          }
-        `
-      }} />
+    <div className="max-w-md mx-auto px-6 py-12 text-center">
+      <h1 className="text-2xl font-light mb-6">CMS Access</h1>
+      <p className="text-gray-400 mb-6">Click below to access the Decap CMS interface:</p>
+      
+      <a 
+        href="/admin/"
+        className="inline-block bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded transition-colors"
+      >
+        Open Decap CMS
+      </a>
+      
+      <p className="text-sm text-gray-500 mt-6">
+        This will take you to the content management system where you can create and edit posts.
+      </p>
     </div>
   );
 }

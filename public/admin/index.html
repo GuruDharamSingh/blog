@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Blog Admin - Decap CMS</title>
+    <title>Blog Admin - Enhanced CMS</title>
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <style>
-      /* Clean admin styling */
+      /* Enhanced admin styling */
       .ai-button {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
@@ -17,10 +17,48 @@
         font-size: 14px;
         margin: 4px;
         transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       }
       .ai-button:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      }
+      .ai-analyze { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); }
+      .ai-social { background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); }
+      .ai-toolbar {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        border: 1px solid #e2e8f0;
+        max-width: 300px;
+      }
+      .ai-results {
+        max-height: 400px;
+        overflow-y: auto;
+        margin-top: 12px;
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 8px;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .loading-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
       }
     </style>
   </head>
@@ -30,7 +68,8 @@
         window.netlifyIdentity.on("init", user => {
           if (!user) {
             window.netlifyIdentity.on("login", () => {
-              document.location.href = "/admin/";
+              // Remove redirect to prevent loop - CMS will load here
+              console.log("User logged in, CMS should load");
             });
           }
         });
@@ -39,37 +78,71 @@
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
     
     <script>
-      // Simple AI Enhancement Functions
-      async function enrichWithAI() {
-        // Get title and content
-        let titleValue = '';
-        let bodyValue = '';
-        
+      // Enhanced AI Enhancement Functions
+      let currentTitle = '';
+      let currentContent = '';
+      
+      function getTitleAndContent() {
         // Find title field
         const titleField = document.querySelector('input[name="title"]') || 
                           document.querySelector('[data-testid*="title"]') ||
                           document.querySelector('input[placeholder*="title" i]');
-        if (titleField) titleValue = titleField.value || '';
+        currentTitle = titleField ? titleField.value || '' : '';
         
         // Find body content
         const codeMirrors = document.querySelectorAll('.CodeMirror');
         for (const cm of codeMirrors) {
           if (cm.CodeMirror) {
-            bodyValue = cm.CodeMirror.getValue();
+            currentContent = cm.CodeMirror.getValue();
             break;
           }
         }
         
-        if (!titleValue || !bodyValue) {
+        return { title: currentTitle, content: currentContent };
+      }
+      
+      function showLoading(button, text = 'Processing...') {
+        button.innerHTML = `<span class="loading-spinner"></span> ${text}`;
+        button.disabled = true;
+      }
+      
+      function hideLoading(button, originalText) {
+        button.innerHTML = originalText;
+        button.disabled = false;
+      }
+      
+      function showResults(results, title) {
+        const toolbar = document.querySelector('.ai-toolbar');
+        let resultsDiv = toolbar.querySelector('.ai-results');
+        if (!resultsDiv) {
+          resultsDiv = document.createElement('div');
+          resultsDiv.className = 'ai-results';
+          toolbar.appendChild(resultsDiv);
+        }
+        
+        resultsDiv.innerHTML = `
+          <div style="font-weight: 600; margin-bottom: 8px; color: #2d3748;">${title}</div>
+          <div style="white-space: pre-wrap; color: #4a5568;">${results}</div>
+        `;
+      }
+
+      // Enhanced Enrich Function
+      async function enrichWithAI() {
+        const { title, content } = getTitleAndContent();
+        
+        if (!title || !content) {
           alert('❌ Please add a title and some content first!');
           return;
         }
+
+        const button = document.querySelector('.ai-enrich');
+        showLoading(button, 'Enriching...');
 
         try {
           const response = await fetch('/api/ai-enrich', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: titleValue, content: bodyValue })
+            body: JSON.stringify({ title, content })
           });
           
           const data = await response.json();
@@ -104,48 +177,151 @@
             }
           }
           
-          let message = '✨ AI enrichment complete!\n\n';
-          if (data.summary) message += `📝 Summary: ${data.summary}\n`;
-          if (data.category) message += `📂 Category: ${data.category}\n`;
-          if (data.meta_description) message += `🔍 Meta: ${data.meta_description}\n`;
+          let message = '✨ Enrichment Complete!\\n\\n';
+          if (data.summary) message += `📝 Summary: ${data.summary}\\n\\n`;
+          if (data.category) message += `📂 Category: ${data.category}\\n\\n`;
+          if (data.meta_description) message += `🔍 Meta: ${data.meta_description}\\n\\n`;
           if (data.tags) message += `🏷️ Suggested tags: ${data.tags.join(', ')} (add manually)`;
           
-          alert(message);
+          showResults(message, '🤖 AI Enrichment Results');
           
         } catch (error) {
           console.error('AI enrichment error:', error);
           alert('❌ Failed to enrich with AI: ' + error.message);
+        } finally {
+          hideLoading(button, '🤖 AI Enrich');
         }
       }
 
-      // Add AI button when CMS loads
-      function addAIButton() {
-        if (document.querySelector('.ai-enhance-btn')) return;
-
-        // Find toolbar location
-        const toolbar = document.querySelector('.cms-editor') || 
-                       document.querySelector('[class*="editor"]') ||
-                       document.body;
-
-        if (toolbar) {
-          const aiButton = document.createElement('button');
-          aiButton.className = 'ai-button ai-enhance-btn';
-          aiButton.innerHTML = '🤖 AI Enrich';
-          aiButton.onclick = enrichWithAI;
-          aiButton.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999;';
-          
-          document.body.appendChild(aiButton);
+      // New Analyze Function
+      async function analyzeContent() {
+        const { title, content } = getTitleAndContent();
+        
+        if (!content || content.length < 100) {
+          alert('❌ Please add at least 100 characters of content to analyze!');
+          return;
         }
+
+        const button = document.querySelector('.ai-analyze');
+        showLoading(button, 'Analyzing...');
+
+        try {
+          const response = await fetch('/api/ai-analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content, targetAudience: 'general', tone: 'professional' })
+          });
+          
+          const data = await response.json();
+          
+          if (data.error) {
+            alert('❌ Analysis Error: ' + data.error);
+            return;
+          }
+
+          const analysis = data.analysis;
+          let results = `📊 Readability Score: ${analysis.readability_score}/10\\n`;
+          results += `📖 Word Count: ${data.word_count}\\n`;
+          results += `⏱️ Reading Time: ${data.reading_time} min\\n\\n`;
+          
+          if (analysis.suggestions) {
+            results += '💡 Suggestions:\\n';
+            analysis.suggestions.forEach(suggestion => {
+              results += `• ${suggestion}\\n`;
+            });
+            results += '\\n';
+          }
+          
+          if (analysis.seo_suggestions) {
+            results += '🔍 SEO Tips:\\n';
+            analysis.seo_suggestions.forEach(tip => {
+              results += `• ${tip}\\n`;
+            });
+          }
+          
+          showResults(results, '📊 Content Analysis');
+          
+        } catch (error) {
+          console.error('AI analyze error:', error);
+          alert('❌ Failed to analyze content: ' + error.message);
+        } finally {
+          hideLoading(button, '📊 Analyze');
+        }
+      }
+
+      // New Social Media Function
+      async function generateSocial() {
+        const { title, content } = getTitleAndContent();
+        
+        if (!title || !content) {
+          alert('❌ Please add a title and content first!');
+          return;
+        }
+
+        const button = document.querySelector('.ai-social');
+        showLoading(button, 'Creating...');
+
+        try {
+          const response = await fetch('/api/ai-social', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, content, style: 'engaging' })
+          });
+          
+          const data = await response.json();
+          
+          if (data.error) {
+            alert('❌ Social Error: ' + data.error);
+            return;
+          }
+
+          const posts = data.social_posts;
+          let results = '📱 Social Media Posts:\\n\\n';
+          
+          if (posts.twitter) results += `🐦 Twitter:\\n${posts.twitter}\\n\\n`;
+          if (posts.linkedin) results += `💼 LinkedIn:\\n${posts.linkedin}\\n\\n`;
+          if (posts.instagram) results += `📸 Instagram:\\n${posts.instagram}\\n\\n`;
+          if (posts.facebook) results += `👥 Facebook:\\n${posts.facebook}\\n\\n`;
+          if (posts.threads) results += `🧵 Threads:\\n${posts.threads}`;
+          
+          showResults(results, '📱 Social Media Posts');
+          
+        } catch (error) {
+          console.error('AI social error:', error);
+          alert('❌ Failed to generate social posts: ' + error.message);
+        } finally {
+          hideLoading(button, '📱 Social');
+        }
+      }
+
+      // Enhanced toolbar creation
+      function createEnhancedToolbar() {
+        if (document.querySelector('.ai-toolbar')) return;
+
+        const toolbar = document.createElement('div');
+        toolbar.className = 'ai-toolbar';
+        toolbar.innerHTML = `
+          <div style="font-weight: 600; margin-bottom: 12px; color: #2d3748; text-align: center;">
+            ✨ AI Writing Assistant
+          </div>
+          <div style="display: grid; gap: 8px;">
+            <button class="ai-button ai-enrich" onclick="enrichWithAI()">🤖 AI Enrich</button>
+            <button class="ai-button ai-analyze" onclick="analyzeContent()">📊 Analyze</button>
+            <button class="ai-button ai-social" onclick="generateSocial()">📱 Social</button>
+          </div>
+        `;
+        
+        document.body.appendChild(toolbar);
       }
 
       // Wait for CMS to load
       let attempts = 0;
       function waitForCMS() {
         attempts++;
-        if (attempts > 10) return;
+        if (attempts > 15) return;
         
         if (document.querySelector('.cms-editor') || document.querySelector('.CodeMirror')) {
-          addAIButton();
+          createEnhancedToolbar();
         } else {
           setTimeout(waitForCMS, 1000);
         }
@@ -153,33 +329,122 @@
 
       setTimeout(waitForCMS, 2000);
 
-      // Clean preview template - no raw HTML shown
+      // Enhanced preview template with AI status
       CMS.registerPreviewTemplate('posts', ({ entry, widgetFor }) => {
         const title = entry.getIn(['data', 'title']) || 'Untitled Post';
         const summary = entry.getIn(['data', 'summary']) || '';
         const category = entry.getIn(['data', 'category']) || 'Personal';
         const tags = entry.getIn(['data', 'tags']) || [];
+        const metaDescription = entry.getIn(['data', 'meta_description']) || '';
+        const featured = entry.getIn(['data', 'featured']) || false;
         const body = widgetFor('body');
         
-        return h('div', { style: { maxWidth: '800px', margin: '0 auto', padding: '20px', fontFamily: 'system-ui' } }, [
-          h('div', { style: { background: '#f8fafc', padding: '16px', borderRadius: '8px', marginBottom: '20px', borderLeft: '4px solid #4f46e5' } }, [
-            h('div', { style: { color: '#6366f1', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', marginBottom: '8px' } }, category),
-            h('h1', { style: { margin: '0 0 12px 0', color: '#1f2937' } }, title),
-            summary && h('p', { style: { color: '#6b7280', margin: '0', fontStyle: 'italic' } }, summary),
-            tags.length > 0 && h('div', { style: { marginTop: '12px' } }, 
+        // Detect AI enhancements
+        const hasAIEnhancements = summary || metaDescription || tags.length > 0;
+        
+        return h('div', { 
+          style: { 
+            maxWidth: '800px', 
+            margin: '0 auto', 
+            padding: '20px', 
+            fontFamily: 'system-ui',
+            lineHeight: '1.6'
+          } 
+        }, [
+          // AI Enhancement Status
+          hasAIEnhancements ? h('div', { 
+            style: { 
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+              color: 'white', 
+              padding: '12px 16px', 
+              borderRadius: '8px', 
+              marginBottom: '16px',
+              fontSize: '14px',
+              fontWeight: '600',
+              textAlign: 'center'
+            } 
+          }, '🤖 AI Enhanced Content Preview') : h('div', { 
+            style: { 
+              background: '#fef3c7', 
+              border: '1px solid #f59e0b', 
+              color: '#92400e',
+              padding: '12px 16px', 
+              borderRadius: '8px', 
+              marginBottom: '16px',
+              fontSize: '14px',
+              textAlign: 'center'
+            } 
+          }, '💡 Tip: Use "🤖 AI Enrich" to enhance this content!'),
+          
+          // Header section
+          h('div', { 
+            style: { 
+              background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)', 
+              padding: '24px', 
+              borderRadius: '12px', 
+              marginBottom: '32px', 
+              borderLeft: '4px solid #4f46e5' 
+            } 
+          }, [
+            h('div', { 
+              style: { 
+                color: '#6366f1', 
+                fontSize: '12px', 
+                fontWeight: '600', 
+                textTransform: 'uppercase', 
+                marginBottom: '8px' 
+              } 
+            }, category + (featured ? ' • ⭐ Featured' : '')),
+            h('h1', { 
+              style: { 
+                margin: '0 0 16px 0', 
+                color: '#1f2937', 
+                fontSize: '2.5rem',
+                fontWeight: '700'
+              } 
+            }, title),
+            summary && h('p', { 
+              style: { 
+                color: '#6b7280', 
+                margin: '0 0 16px 0', 
+                fontStyle: 'italic',
+                fontSize: '1.1rem'
+              } 
+            }, summary),
+            metaDescription && h('div', { 
+              style: { 
+                background: '#f3f4f6', 
+                padding: '8px 12px', 
+                borderRadius: '6px', 
+                fontSize: '12px', 
+                color: '#6b7280',
+                marginBottom: '12px'
+              } 
+            }, `SEO Description: ${metaDescription}`),
+            tags.length > 0 && h('div', { 
+              style: { marginTop: '16px' } 
+            }, 
               tags.map(tag => h('span', { 
                 style: { 
                   background: '#e5e7eb', 
                   color: '#374151', 
-                  padding: '2px 8px', 
-                  borderRadius: '12px', 
+                  padding: '4px 12px', 
+                  borderRadius: '16px', 
                   fontSize: '12px', 
-                  marginRight: '8px' 
+                  marginRight: '8px',
+                  fontWeight: '500'
                 } 
               }, tag))
             )
           ]),
-          h('article', { style: { lineHeight: '1.6', color: '#374151' } }, body)
+          // Content section
+          h('article', { 
+            style: { 
+              lineHeight: '1.8', 
+              color: '#374151',
+              fontSize: '1.1rem'
+            } 
+          }, body)
         ]);
       });
     </script>
