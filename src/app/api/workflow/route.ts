@@ -4,10 +4,6 @@ import path from 'path';
 import OpenAI from 'openai';
 import matter from 'gray-matter';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 /**
  * Advanced Workflow API - Orchestrates multi-step content operations
  * This demonstrates how Node.js can coordinate complex workflows that
@@ -17,15 +13,20 @@ export async function POST(request: NextRequest) {
   try {
     const { action, slug, options = {} } = await request.json();
 
+    // Initialize OpenAI client inside the function to avoid build-time issues
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+
     switch (action) {
       case 'optimize_post':
-        return await optimizePost(slug, options);
+        return await optimizePost(openai, slug, options);
       case 'generate_series':
-        return await generateSeries(options);
+        return await generateSeries(openai, options);
       case 'cross_reference':
-        return await crossReferenceContent();
+        return await crossReferenceContent(openai);
       case 'performance_audit':
-        return await performanceAudit();
+        return await performanceAudit(openai);
       default:
         return NextResponse.json({ error: 'Unknown workflow action' }, { status: 400 });
     }
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
 /**
  * Optimize a specific post through multiple AI passes
  */
-async function optimizePost(slug: string, options: any) {
+async function optimizePost(openai: OpenAI, slug: string, options: any) {
   const postsDir = path.join(process.cwd(), 'content', 'posts');
   const filePath = path.join(postsDir, `${slug}.mdx`);
   
@@ -166,7 +167,7 @@ Return only the improved content.`
 /**
  * Generate a content series based on a topic
  */
-async function generateSeries(options: any) {
+async function generateSeries(openai: OpenAI, options: any) {
   const { topic, target_audience = 'developers', post_count = 5, style = 'tutorial' } = options;
   
   const seriesResponse = await openai.chat.completions.create({
@@ -203,7 +204,7 @@ Format as JSON with detailed series plan.`
 /**
  * Cross-reference all content for internal linking opportunities
  */
-async function crossReferenceContent() {
+async function crossReferenceContent(openai: OpenAI) {
   const postsDir = path.join(process.cwd(), 'content', 'posts');
   const files = await fs.readdir(postsDir);
   const posts = [];
@@ -262,7 +263,7 @@ Return as JSON with actionable linking recommendations.`
 /**
  * Performance audit of content strategy
  */
-async function performanceAudit() {
+async function performanceAudit(openai: OpenAI) {
   const postsDir = path.join(process.cwd(), 'content', 'posts');
   const files = await fs.readdir(postsDir);
   
