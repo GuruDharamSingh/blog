@@ -101,15 +101,9 @@ published: ${published}
       finalContent = frontmatter + content;
     }
 
-    const isProd = !!(process.env.NETLIFY || process.env.VERCEL);
-
-    if (isProd) {
-      // In production (Netlify), filesystem is read-only. Commit to GitHub instead.
-      const token = process.env.GITHUB_TOKEN || process.env.GITHUB_PERSONAL_TOKEN || '';
-      if (!token) {
-        throw new Error('Missing GITHUB_TOKEN in environment for publishing from production');
-      }
-
+    // Prefer GitHub commit whenever a token is present (production-safe)
+    const token = process.env.GITHUB_TOKEN || process.env.GITHUB_PERSONAL_TOKEN || '';
+    if (token) {
       const repoEnv = process.env.GITHUB_REPOSITORY || 'GuruDharamSingh/blog';
       const [owner, repo] = repoEnv.split('/') as [string, string];
       const branch = process.env.GITHUB_BRANCH || 'main';
@@ -131,8 +125,10 @@ published: ${published}
         published,
         mode: 'github-commit',
       });
-    } else {
-      // Local/dev environment: write directly to filesystem
+    }
+
+    // Fallback: local/dev filesystem write
+    try {
       const contentPath = path.join(process.cwd(), 'content', contentDir);
       const filePath = path.join(contentPath, fullFilename);
 
@@ -146,6 +142,14 @@ published: ${published}
         published,
         mode: 'local-fs',
       });
+    } catch (err: any) {
+      // Common in serverless (Netlify/Vercel) due to read-only FS
+      if (err && err.code === 'EROFS') {
+        return NextResponse.json({
+          error: 'Read-only filesystem. Set GITHUB_TOKEN in environment to enable GitHub-backed publishing in production.'
+        }, { status: 500 });
+      }
+      throw err;
     }
 
   } catch (error: any) {
