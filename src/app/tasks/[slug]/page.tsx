@@ -1,13 +1,42 @@
 import { getPostBySlug, getAllTasksMeta } from '@/lib/posts';
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { Callout } from '@/components/mdx/Callout';
-import { InteractiveChart } from '@/components/mdx/InteractiveChart';
+import { 
+  InteractiveChart,
+  Callout,
+  Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter,
+  Button,
+  CodeBlock,
+  Progress,
+  Alert, AlertTitle, AlertDescription,
+  Tabs, TabsList, TabsTrigger, TabsContent,
+  Accordion, AccordionItem, AccordionTrigger, AccordionContent
+} from '@/components/mdx';
 import Link from 'next/link';
 
 const components = {
   Callout,
   InteractiveChart,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  Button,
+  CodeBlock,
+  Progress,
+  Alert,
+  AlertTitle,
+  AlertDescription,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
 };
 
 interface TaskPageProps {

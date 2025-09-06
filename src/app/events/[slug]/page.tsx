@@ -1,6 +1,42 @@
 import { notFound } from 'next/navigation';
 import { getPostBySlug, getAllEventsMeta } from '@/lib/posts';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import { 
+  InteractiveChart,
+  Callout,
+  Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter,
+  Button,
+  CodeBlock,
+  Progress,
+  Alert, AlertTitle, AlertDescription,
+  Tabs, TabsList, TabsTrigger, TabsContent,
+  Accordion, AccordionItem, AccordionTrigger, AccordionContent
+} from '@/components/mdx';
+
+const components = {
+  InteractiveChart,
+  Callout,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  Button,
+  CodeBlock,
+  Progress,
+  Alert,
+  AlertTitle,
+  AlertDescription,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+};
 
 interface EventPageProps {
   params: Promise<{
@@ -98,7 +134,7 @@ export default async function EventPage({ params }: EventPageProps) {
           )}
           
           <div className="prose max-w-none">
-            <MDXRemote source={content} />
+            <MDXRemote source={content} components={components} />
           </div>
 
           {/* Agenda */}

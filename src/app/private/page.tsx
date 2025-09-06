@@ -60,7 +60,18 @@ export default function PrivatePage() {
         <p className="text-gray-400">Content management and administration</p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 max-w-2xl mx-auto">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">
+        <Link 
+          href="/editor"
+          className="bg-gray-900 border border-gray-800 rounded-lg p-6 hover:border-gray-700 transition-colors group"
+        >
+          <h2 className="text-xl font-medium mb-2 group-hover:text-gray-300">✏️ Mobile Editor</h2>
+          <p className="text-gray-400 text-sm mb-4">
+            Clean, mobile-friendly MDX editor for quick posting
+          </p>
+          <span className="text-emerald-400 text-sm">Write Post →</span>
+        </Link>
+
         <Link 
           href="/admin/"
           className="bg-gray-900 border border-gray-800 rounded-lg p-6 hover:border-gray-700 transition-colors group"

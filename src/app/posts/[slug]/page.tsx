@@ -1,13 +1,41 @@
 import { getPostBySlug as getFsPost, getAllPostsMeta } from '@/lib/posts';
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { InteractiveChart } from '@/components/mdx/InteractiveChart';
-import { Callout } from '@/components/mdx/Callout';
+import { 
+  InteractiveChart,
+  Callout,
+  Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter,
+  Button,
+  CodeBlock,
+  Progress,
+  Alert, AlertTitle, AlertDescription,
+  Tabs, TabsList, TabsTrigger, TabsContent,
+  Accordion, AccordionItem, AccordionTrigger, AccordionContent
+} from '@/components/mdx';
 
 const components = {
   InteractiveChart,
   Callout,
-  // Add more custom components here
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  Button,
+  CodeBlock,
+  Progress,
+  Alert,
+  AlertTitle,
+  AlertDescription,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
 };
 
 export async function generateStaticParams() {

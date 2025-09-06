@@ -1,0 +1,110 @@
+---
+title: "Modern MDX Components Showcase"
+date: "2025-01-22"
+category: "Development"
+tags: ["MDX", "React", "Tailwind", "Radix UI"]
+summary: "Showcasing the new modern MDX components with Radix UI and Tailwind CSS"
+published: true
+---
+
+# Modern MDX Components Showcase
+
+This post demonstrates our new enhanced MDX components built with Radix UI and Tailwind CSS.
+
+## Enhanced Callouts
+
+<Callout type="info" title="Information">
+This is an informational callout using Radix icons and improved styling.
+</Callout>
+
+<Callout type="success" title="Success Story">
+Great! Your components are working perfectly with the new design system.
+</Callout>
+
+<Callout type="warning" title="Important Notice" collapsible={true}>
+This callout is collapsible. Click the chevron to expand/collapse the content. This is useful for optional details or advanced information.
+</Callout>
+
+<Callout type="error" title="Error Handling">
+Error callouts now have proper semantic colors and accessibility features.
+</Callout>
+
+## Card Components
+
+<Card variant="elevated" padding="lg">
+  <CardHeader>
+    <CardTitle>Feature Card</CardTitle>
+    <CardDescription>
+      This is a modern card component with proper typography and spacing.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p>Cards can contain any content and have different variants and padding options.</p>
+  </CardContent>
+  <CardFooter>
+    <Button variant="default">Primary Action</Button>
+    <Button variant="outline">Secondary</Button>
+  </CardFooter>
+</Card>
+
+## Interactive Elements
+
+Here's a progress indicator:
+
+<Progress value={75} max={100} showValue={true} variant="success" />
+
+And different button styles:
+
+<div className="flex gap-2 my-4">
+  <Button variant="default">Default</Button>
+  <Button variant="outline">Outline</Button>
+  <Button variant="ghost">Ghost</Button>
+  <Button variant="destructive">Destructive</Button>
+</div>
+
+## Code Blocks
+
+<CodeBlock language="typescript" title="Enhanced Component Example">
+```typescript
+interface ComponentProps {
+  variant?: 'default' | 'enhanced';
+  children: React.ReactNode;
+}
+
+export function ModernComponent({ variant = 'default', children }: ComponentProps) {
+  return (
+    <div className={cn('base-styles', variantStyles[variant])}>
+      {children}
+    </div>
+  );
+}
+```
+</CodeBlock>
+
+## Alerts
+
+<Alert variant="info">
+  <AlertTitle>Pro Tip</AlertTitle>
+  <AlertDescription>
+    These components are built with accessibility in mind using Radix UI primitives.
+  </AlertDescription>
+</Alert>
+
+<Alert variant="success" dismissible={true}>
+  <AlertTitle>Migration Complete</AlertTitle>
+  <AlertDescription>
+    Successfully upgraded from basic components to modern Radix + Tailwind architecture.
+  </AlertDescription>
+</Alert>
+
+## Conclusion
+
+The new component system provides:
+
+- **Accessibility**: Built on Radix UI primitives
+- **Consistency**: Unified design tokens with Tailwind
+- **Flexibility**: Configurable variants and props
+- **Performance**: Optimized with class-variance-authority
+- **Developer Experience**: TypeScript support and clear APIs
+
+This creates a solid foundation for rich MDX content creation.

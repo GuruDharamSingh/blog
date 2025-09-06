@@ -1,0 +1,135 @@
+/* Custom dark theme for MDX Editor */
+.mdx-editor-dark {
+  --mdx-editor-bg: #000000;
+  --mdx-editor-text: #ffffff;
+  --mdx-editor-border: #374151;
+  --mdx-editor-toolbar-bg: #111827;
+  --mdx-editor-button-bg: #1f2937;
+  --mdx-editor-button-hover: #374151;
+}
+
+/* Override MDX Editor default styles */
+.mdx-editor {
+  background-color: #111827 !important;
+  color: #ffffff !important;
+  border: none !important;
+  min-height: 400px;
+  font-size: 16px !important;
+}
+
+.mdx-editor .mdxeditor-toolbar {
+  background-color: #111827 !important;
+  border-bottom: 1px solid #374151 !important;
+  padding: 8px 12px !important;
+}
+
+.mdx-editor .mdxeditor-toolbar button {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+  border: 1px solid #374151 !important;
+  border-radius: 4px !important;
+  margin: 0 2px !important;
+  transition: all 0.2s ease !important;
+  font-weight: 500 !important;
+}
+
+.mdx-editor .mdxeditor-toolbar button:hover {
+  background-color: #374151 !important;
+  border-color: #4b5563 !important;
+  color: #ffffff !important;
+}
+
+.mdx-editor .mdxeditor-content-area {
+  background-color: #111827 !important;
+  color: #f9fafb !important;
+  padding: 16px !important;
+  font-size: 16px !important;
+  line-height: 1.7 !important;
+  border: 1px solid #374151 !important;
+}
+
+.mdx-editor .mdxeditor-content-area p {
+  color: #f9fafb !important;
+  line-height: 1.7 !important;
+  margin-bottom: 1em !important;
+  font-size: 16px !important;
+}
+
+.mdx-editor .mdxeditor-content-area h1,
+.mdx-editor .mdxeditor-content-area h2,
+.mdx-editor .mdxeditor-content-area h3,
+.mdx-editor .mdxeditor-content-area h4,
+.mdx-editor .mdxeditor-content-area h5,
+.mdx-editor .mdxeditor-content-area h6 {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  margin-bottom: 0.5em !important;
+  margin-top: 1em !important;
+}
+
+.mdx-editor .mdxeditor-content-area code {
+  background-color: #1f2937 !important;
+  color: #fbbf24 !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-family: 'Courier New', monospace !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.mdx-editor .mdxeditor-content-area pre {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+  padding: 16px !important;
+  border-radius: 8px !important;
+  border: 1px solid #374151 !important;
+  overflow-x: auto !important;
+  font-size: 14px !important;
+}
+
+.mdx-editor .mdxeditor-content-area blockquote {
+  border-left: 4px solid #6366f1 !important;
+  padding-left: 16px !important;
+  margin-left: 0 !important;
+  color: #e5e7eb !important;
+  font-style: italic !important;
+  background-color: #1f2937 !important;
+  padding: 12px 16px !important;
+  border-radius: 6px !important;
+}
+
+.mdx-editor .mdxeditor-content-area ul,
+.mdx-editor .mdxeditor-content-area ol {
+  color: #f9fafb !important;
+  padding-left: 24px !important;
+}
+
+.mdx-editor .mdxeditor-content-area li {
+  color: #f9fafb !important;
+  margin-bottom: 0.5em !important;
+  line-height: 1.6 !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .mdx-editor .mdxeditor-toolbar {
+    flex-wrap: wrap !important;
+    padding: 6px 8px !important;
+  }
+  
+  .mdx-editor .mdxeditor-toolbar button {
+    margin: 1px !important;
+    padding: 6px 8px !important;
+    font-size: 12px !important;
+  }
+  
+  .mdx-editor .mdxeditor-content-area {
+    padding: 12px !important;
+  }
+}
+
+/* Focus states */
+.mdx-editor:focus-within {
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 2px !important;
+}

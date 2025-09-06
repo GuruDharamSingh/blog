@@ -1,6 +1,42 @@
 import { notFound } from 'next/navigation';
 import { getPostBySlug, getAllCreativeMeta } from '@/lib/posts';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import { 
+  InteractiveChart,
+  Callout,
+  Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter,
+  Button,
+  CodeBlock,
+  Progress,
+  Alert, AlertTitle, AlertDescription,
+  Tabs, TabsList, TabsTrigger, TabsContent,
+  Accordion, AccordionItem, AccordionTrigger, AccordionContent
+} from '@/components/mdx';
+
+const components = {
+  InteractiveChart,
+  Callout,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  Button,
+  CodeBlock,
+  Progress,
+  Alert,
+  AlertTitle,
+  AlertDescription,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+};
 
 interface CreativePageProps {
   params: Promise<{
@@ -113,7 +149,7 @@ export default async function CreativePage({ params }: CreativePageProps) {
         {/* Main Content */}
         <div className="lg:col-span-3">
           <div className="prose max-w-none mb-8">
-            <MDXRemote source={content} />
+            <MDXRemote source={content} components={components} />
           </div>
 
           {/* Gallery */}
