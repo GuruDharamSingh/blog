@@ -72,15 +72,16 @@ export default function PrivatePage() {
           <span className="text-emerald-400 text-sm">Write Post →</span>
         </Link>
 
+        {/* CMS removed; keeping a card pointing to Mobile Editor instead */}
         <Link 
-          href="/admin/"
+          href="/editor"
           className="bg-gray-900 border border-gray-800 rounded-lg p-6 hover:border-gray-700 transition-colors group"
         >
-          <h2 className="text-xl font-medium mb-2 group-hover:text-gray-300">CMS Editor</h2>
+          <h2 className="text-xl font-medium mb-2 group-hover:text-gray-300">Mobile Editor</h2>
           <p className="text-gray-400 text-sm mb-4">
-            Access Decap CMS for content creation and editing
+            Create and edit posts using the built-in MDX editor
           </p>
-          <span className="text-blue-400 text-sm">Open Netlify CMS →</span>
+          <span className="text-emerald-400 text-sm">Open Editor →</span>
         </Link>
 
         <Link 

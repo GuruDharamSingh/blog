@@ -3,10 +3,8 @@
 ## PRIORITY 1: IMMEDIATE FIXES
 
 ### 🔧 Fix CMS Access Issue
-- [ ] Test `/admin` and `/admin/` routes
-- [ ] Check Decap CMS configuration
-- [ ] Verify netlify-identity widget setup
-- [ ] Ensure git-gateway backend is properly configured
+- [ ] Verify `/editor` works on mobile and desktop
+- [ ] Confirm production publish commits to GitHub and triggers Netlify deploy
 
 ### 🏠 Simplify Homepage (Revert to Basic Blog)
 - [ ] Create clean, minimal blog homepage

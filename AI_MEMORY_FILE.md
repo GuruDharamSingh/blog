@@ -138,7 +138,7 @@ This is a Next.js 15.4.6 lifestyle blog and personal organization application bu
 ## TECHNICAL FOUNDATION
 
 - **Framework:** Next.js 15.4.6 with Turbopack
-- **CMS:** Decap CMS (Git-based)
+- **CMS:** None (custom editor at `/editor`, GitHub-commit publishing in prod)
 - **Styling:** Tailwind CSS
 - **Language:** TypeScript
 - **Content:** MDX for rich content
@@ -229,7 +229,7 @@ blog/
 ├── components/        # Reusable React components
 ├── lib/posts.ts       # Content management logic
 ├── content/           # MDX content files
-└── public/admin/      # Decap CMS configuration
+└── src/app/editor/    # Mobile MDX editor
 ```
 
 ### Key Functions in lib/posts.ts
